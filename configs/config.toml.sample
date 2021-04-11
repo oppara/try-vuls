@@ -1,0 +1,19 @@
+[servers]
+
+# https://vuls.io/docs/en/config.toml.html
+
+[servers.vagrant]
+host = "192.168.1.100"
+user = "vagrant"
+port = "22"
+
+sshConfigPath = "/root/.ssh/config"
+keyPath = "/root/.ssh/vagrant_private_key"
+
+# アプリケーションで利用しているライブラリの脆弱性をチェック
+# https://help.vuls.biz/manual/lib_scan/#lockfile を指定したスキャン方法
+# findLock = true
+# lockfiles = [
+    # "/path/to/src/package.json"
+# ]
+scanMode = ["fast-root"]

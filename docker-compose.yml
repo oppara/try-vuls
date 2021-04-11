@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+
+  nginx:
+    build: ./docker/nginx
+    image: vuls-nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - vulsrepo
+
+  vuls:
+    image: vuls/vuls
+    volumes:
+      - ./docker/ssh:/root/.ssh:ro
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+      # ホストの ssh エージェントを転送する設定
+      # https://zenn.dev/oppara/articles/mac-docker-ssh-agentj
+      - type: bind
+        source: /run/host-services/ssh-auth.sock
+        target: /run/host-services/ssh-auth.sock
+    environment:
+      # ホストの ssh エージェントを転送する設定
+      # https://zenn.dev/oppara/articles/mac-docker-ssh-agentj
+      - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
+
+  # NDV と JVN をローカルで管理する
+  # https://github.com/kotakanbe/go-cve-dictionary
+  cve:
+    image: vuls/go-cve-dictionary
+    volumes:
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+  # OS 固有の OVAL 情報をローカルで管理する
+  # https://github.com/kotakanbe/goval-dictionary
+  oval:
+    image: vuls/goval-dictionary
+    volumes:
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+  # Security Tracker をローカルで管理する
+  # https://github.com/knqyf263/gost
+  gost:
+    image: vuls/gost
+    volumes:
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+  # 脆弱性に対する攻撃コードをローカルで管理する
+  # https://github.com/vulsio/go-exploitdb
+  go-exploitdb:
+    image: vuls/go-exploitdb
+    volumes:
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+  # Metasploit 情報をローカルで管理する
+  # https://github.com/takuzoo3868/go-msfdb
+  go-msfdb:
+    image: vuls/go-msfdb
+    volumes:
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+
+  # WebUI
+  # https://vuls.io/docs/ja/vulsrepo.html
+  vulsrepo:
+    image: vuls/vulsrepo
+    volumes:
+      - ./results:/vuls/results/
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls
+    ports:
+      - "5111:5111"
+
+  # composer.lock などアプリケーションライブラリの脆弱性を検知する
+  # https://vuls.io/docs/ja/usage-scan-non-os-packages.html
+  trivy:
+    image: aquasec/trivy
+    volumes:
+      - ./results:/vuls/results/
+      - ./:/vuls
+      - ./vuls-log:/var/log/vuls

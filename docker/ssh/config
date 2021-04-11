@@ -1,0 +1,12 @@
+
+Include conf.d/*
+
+Host *
+    TCPKeepAlive yes
+    IdentitiesOnly yes
+    ServerAliveInterval 120
+    ServerAliveCountMax 10
+    ForwardAgent yes
+    AddKeysToAgent yes
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
