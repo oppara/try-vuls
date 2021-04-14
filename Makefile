@@ -53,7 +53,7 @@ oval: ## fetch oval
 	docker-compose run --rm oval fetch-amazon
 	docker-compose run --rm oval fetch-redhat 5 6 7 8
 	docker-compose run --rm oval fetch-debian 7 8 9 10
-	docker-compose run --rm oval fetch-ubuntu 12 14 16 18
+	docker-compose run --rm oval fetch-ubuntu 14 16 18
 
 .PHONY: gost
 gost: ## fetch gost
